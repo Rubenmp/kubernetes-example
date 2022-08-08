@@ -1,0 +1,37 @@
+apiVersion: apps/v1 # For versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata: # Data that helps uniquely identify the object (using name, UID and namespace)
+  name: noq-front-end-<<ENVIRONMENT>>
+  labels:
+    name: noq-front-end-<<ENVIRONMENT>>
+spec:
+  progressDeadlineSeconds: 60 # Prevent indefinite rollout when images are invalid
+  selector: # The selector field defines how the deployment finds which pod to manage
+    matchLabels:
+      app: noq-front-end-<<ENVIRONMENT>>
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: noq-front-end-<<ENVIRONMENT>> # Must match the selector label
+    spec:
+      containers:
+        - name: noq-front-end-<<ENVIRONMENT>>
+          image: localhost:5000/noq-front-end:<<FRONT_END_VERSION>>
+          ports:
+            - name: http
+              containerPort: 4200
+---
+apiVersion: v1
+kind: Service
+metadata: # This service will select the pods based on the label
+  name: noq-front-end-<<ENVIRONMENT>>
+spec:
+  type: NodePort # which expose the application on a port across a each of your nodes
+  ports:
+    - port: 4200
+      nodePort: <<EXTERNAL_PORT>>
+      targetPort: 4200
+      protocol: TCP
+  selector:
+    app: noq-front-end-<<ENVIRONMENT>>

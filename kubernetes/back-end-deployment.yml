@@ -1,0 +1,65 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: noq-back-end-<<ENVIRONMENT>>
+  labels:
+    name: noq-back-end-<<ENVIRONMENT>>
+spec:
+  ports:
+    - port: 8080
+      nodePort: <<EXTERNAL_PORT>>
+      targetPort: 8080
+      protocol: TCP
+  selector:
+    app: noq-back-end-<<ENVIRONMENT>>
+  type: NodePort
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: noq-back-end-<<ENVIRONMENT>>
+spec:
+  progressDeadlineSeconds: 60 # Prevent indefinite rollout when images are invalid
+  selector:
+    matchLabels:
+      app: noq-back-end-<<ENVIRONMENT>>
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: noq-back-end-<<ENVIRONMENT>>
+    spec:
+      containers:
+        - name: noq-back-end-<<ENVIRONMENT>>
+          image: localhost:5000/noq-back-end:<<BACK_END_VERSION>>
+          ports:
+            - containerPort: 8080
+          env: # Setting Environmental Variables
+            - name: NOQ_DATABASE_HOST # Setting Database host address from configMap
+              valueFrom:
+                configMapKeyRef:
+                  name: db-conf # name of configMap
+                  key: host
+            - name: NOQ_DATABASE_PORT
+              value: "3306"
+            - name: NOQ_DATABASE_NAME # Setting Database name from configMap
+              valueFrom:
+                configMapKeyRef:
+                  name: db-conf
+                  key: name
+            - name: NOQ_DATABASE_USERNAME # Setting Database username from Secret
+              valueFrom:
+                secretKeyRef:
+                  name: noq-secrets # Secret Name
+                  key: databaseUser
+            - name: NOQ_DATABASE_PASSWORD # Setting Database password from Secret
+              valueFrom:
+                secretKeyRef:
+                  name: noq-secrets
+                  key: databaseUserPassword
+            - name: NOQ_SECURITY_KEY # Setting security key for encryption
+              valueFrom:
+                secretKeyRef:
+                  name: noq-secrets
+                  key: encryptionKey

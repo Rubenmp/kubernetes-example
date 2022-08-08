@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: db-conf
+data:
+ host: db-<<ENVIRONMENT>>
+ name: <<DATABASE_NAME>>
