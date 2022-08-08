@@ -7,7 +7,7 @@ Main characteristics of this example:
 - Kubernetes secrets to store passwords as safe environment variables inside the containers.
 - File 'configure_server.sh' contains a basic script to configure the server.
 
-In the Kubernetes files, there are patterns like '<<ENVIRONMENT>>' that will change dynamically depending on the desired environment to deploy. It is done like this because my religion does not allow me to use Helm for this kind of thing (I might change my opinion in the future).
+In the Kubernetes files, there are patterns like '\<\<ENVIRONMENT\>\>' that will change dynamically depending on the desired environment to deploy. It is done like this because my religion does not allow me to use Helm (I might change my opinion in the future).
 
 I strongly recommend these videos to learn Kubernetes:
 - https://www.youtube.com/watch?v=aPzpsfQtlKY&t=9s&ab_channel=TechnoTownTechie
@@ -31,10 +31,8 @@ This script will install [*git*](https://git-scm.com/), [node](https://nodejs.or
 
 # Deployment procedure
 This procedure will update the docker image which is running in *staging/production*.
-
-*Staging* is the previous step to production. New features and bug fixing must be tested in staging.
-
-*Production* is the environment where the app is running. The client's data will be stored here.
+- *Staging* is the previous step to production. New features and bug fixing must be tested in staging.
+- *Production* is the environment where the app is running. The client's data will be stored here.
 
 
 ## Basic explanation
